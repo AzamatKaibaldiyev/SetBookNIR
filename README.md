@@ -58,8 +58,16 @@ identical consecutive compositions (14,192 groups).
 
 ## Trained models
 
-The release assets hold the 21 checkpoints of the paper (3 seeds each) with their fitted post-hoc heads. Put them in
-`runs/`:
+The [v1.0 release](https://github.com/AzamatKaibaldiyev/SetBookNIR/releases/tag/v1.0) holds the 21 checkpoints of the
+paper (3 seeds each, 15-80 MB per file) with their fitted post-hoc heads. Put them in `runs/`:
+
+```bash
+mkdir -p runs
+for f in setbooknir_e_{internimage,maxvit,overlock}_all_s{0,1,2}.pt setbooknir_s_all_s{0,1,2}.pt \
+         teacher_{internimage,maxvit,overlock}_all_s{0,1,2}.pt; do
+  curl -L -o runs/$f https://github.com/AzamatKaibaldiyev/SetBookNIR/releases/download/v1.0/$f
+done
+```
 
 | Files | Model |
 |---|---|
@@ -79,7 +87,9 @@ python -m setbooknir.evaluate --ckpt runs/setbooknir_s_all_s0.pt
 
 Each command prints every read-out step: `plain`, then `MC`, `MC + set decoding`, `stack mean`, `stack knob 25` and
 `stack MAP`. Use `--lam 0 5 25 100` for points on the knob's frontier, and `--save` to keep the per-scan decisions.
-Results agree with the table up to the randomness of the Monte-Carlo passes and of cuDNN's TF32 kernels.
+With the released checkpoints, these commands give (mean over seeds 0-2) Acc 79.16 / MSE 53.36 for SetBookNIR-E, and
+78.78 / 55.57 (single pass) and 78.84 / 54.40 (own stack) for SetBookNIR-S: Acc and MSE within 0.03 of the table. The small
+differences come from the random Monte-Carlo passes and from the convolution kernels cuDNN selects (TF32).
 
 ## Training from scratch
 
