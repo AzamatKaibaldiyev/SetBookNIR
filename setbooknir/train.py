@@ -198,7 +198,7 @@ def train(cfg, split, seed, out, data=None, log=print):
         history.append(rec)
 
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
-    torch.save({"model": model.state_dict(), "config": cfg, "split": split, "seed": seed,
+    torch.save({"model": {k: v.cpu() for k, v in model.state_dict().items()}, "config": cfg, "split": split, "seed": seed,
                 "sets": torch.from_numpy(sets.astype(np.int64)), "codebook": torch.from_numpy(codebook),
                 "history": history, "minutes": round((time.time() - t0) / 60, 1)}, out)
     log(f"saved {out}")

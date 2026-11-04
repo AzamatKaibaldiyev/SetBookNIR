@@ -28,10 +28,10 @@ FIT = dict(epochs=10, lr=1e-3, weight_decay=1e-2, batch_size=512, noisy_passes=4
 
 
 def load(path, dev):
-    ck = torch.load(path, map_location=dev, weights_only=True)
-    model = build_model(ck["config"]).to(dev).eval()
+    ck = torch.load(path, map_location="cpu", weights_only=True)
+    model = build_model(ck["config"])
     model.load_state_dict(ck["model"])
-    return ck, model
+    return ck, model.to(dev).eval()
 
 
 @torch.no_grad()
@@ -104,8 +104,9 @@ def fit(path, data=None, out=None):
     Fn = torch.stack([f[:, :d_m] for f in features(model, X[tr], FIT["noisy_passes"], dev=dev)])
     h_noisy = fit_head(Fn, len(sets), on_set, a, p)
     _restore(state)
-    ck["heads"] = {"d_m": d_m, "d": h_cb.in_features, "set": h_set.state_dict(), "set_noisy": h_noisy.state_dict(),
-                   "codebook": h_cb.state_dict(), "codebook_mlp": h_mlp.state_dict()}
+    cpu = lambda h: {k: v.cpu() for k, v in h.state_dict().items()}  # noqa: E731
+    ck["heads"] = {"d_m": d_m, "d": h_cb.in_features, "set": cpu(h_set), "set_noisy": cpu(h_noisy), "codebook": cpu(h_cb),
+                   "codebook_mlp": cpu(h_mlp)}
     torch.save(ck, out or path)
     print(f"heads fitted on {len(tr):,} training scans -> {out or path}")
 
