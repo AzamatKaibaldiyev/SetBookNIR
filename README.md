@@ -24,15 +24,15 @@ within ±γ points). SetBookNIR makes these decisions at the level of the whole 
 ## Results (FabricSpectra test set)
 
 All rows: trained on the full training set, last epoch of a fixed schedule, test set scored once, mean over 3 seeds
-(± sd for Acc). HL in %, MSE in pp², γ±k in %.
+(± sd for Acc). Params: used at inference (network plus the heads its read-out uses). HL in %, MSE in pp², γ±k in %.
 
 | Model | Params | Acc ↑ | HL ↓ | MSE ↓ | γ±1 ↑ | γ±5 ↑ |
 |---|---|---|---|---|---|---|
 | H-MT-FCN (best published, single run) | – | 77.81 | 2.7 | 55.75 | 35.52 | 64.14 |
-| ConvNeXtV2-A, re-run (+ final LayerNorm, drop-path 0.1) | 3.5 M | 75.43 ± 0.11 | 3.022 | 63.91 | 37.86 | 66.14 |
+| ConvNeXtV2-A, re-run (+ final LayerNorm, drop-path 0.1) | 3.2 M | 75.43 ± 0.11 | 3.022 | 63.91 | 37.86 | 66.14 |
 | **SetBookNIR-S**, single pass | 3.3 M | 78.78 ± 0.02 | 2.615 | 55.57 | 34.08 | 67.22 |
-| SetBookNIR-S + own stack | 3.3 M | 78.86 ± 0.04 | 2.615 | 54.40 | 31.71 | 66.42 |
-| **SetBookNIR-E** (λ = 25) | 25 M | 79.14 ± 0.07 | 2.605 | 53.35 | 47.10 | 65.57 |
+| SetBookNIR-S + own stack | 5.0 M | 78.86 ± 0.04 | 2.615 | 54.40 | 31.71 | 66.42 |
+| **SetBookNIR-E** (λ = 25) | 32 M | 79.14 ± 0.07 | 2.605 | 53.35 | 47.10 | 65.57 |
 
 Every design choice and λ was selected on a fabric-level development split (below), never on the test set.
 
